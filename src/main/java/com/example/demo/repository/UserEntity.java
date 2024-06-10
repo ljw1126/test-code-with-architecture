@@ -40,4 +40,17 @@ public class UserEntity {
 
     @Column(name = "last_login_at")
     private Long lastLoginAt;
+
+    @Override
+    public String toString() {
+        return "UserEntity{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", address='" + address + '\'' +
+                ", certificationCode='" + certificationCode + '\'' +
+                ", status=" + status +
+                ", lastLoginAt=" + lastLoginAt +
+                '}';
+    }
 }
