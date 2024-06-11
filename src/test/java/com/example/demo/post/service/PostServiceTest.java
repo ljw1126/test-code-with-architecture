@@ -1,4 +1,4 @@
-package com.example.demo.service;
+package com.example.demo.post.service;
 
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
 import com.example.demo.post.domain.PostCreate;
