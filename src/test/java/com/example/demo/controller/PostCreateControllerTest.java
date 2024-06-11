@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.dto.PostCreateDto;
-import com.example.demo.model.dto.PostUpdateDto;
+import com.example.demo.post.domain.PostCreate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,14 +35,14 @@ class PostCreateControllerTest {
 
     @Test
     void createPost로_포스트를_추가_할수있다() throws Exception {
-        PostCreateDto postCreateDto = PostCreateDto.builder()
+        PostCreate postCreate = PostCreate.builder()
                 .content("포스트 신규 추가")
                 .writerId(2L)
                 .build();
 
         mockMvc.perform(post("/api/posts")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(postCreateDto))
+                        .content(objectMapper.writeValueAsString(postCreate))
                 )
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id").value("2"))

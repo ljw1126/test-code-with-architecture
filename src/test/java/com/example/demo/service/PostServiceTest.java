@@ -1,11 +1,10 @@
 package com.example.demo.service;
 
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.dto.PostCreateDto;
-import com.example.demo.model.dto.PostUpdateDto;
-import com.example.demo.repository.PostEntity;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.DisplayName;
+import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.post.domain.PostCreate;
+import com.example.demo.post.domain.PostUpdate;
+import com.example.demo.post.service.PostService;
+import com.example.demo.post.infrastructure.PostEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,7 +42,7 @@ class PostServiceTest {
 
     @Test
     void create() {
-        PostCreateDto postCreateDto = PostCreateDto.builder()
+        PostCreate postCreateDto = PostCreate.builder()
                 .writerId(2L)
                 .content("두번째 포스트")
                 .build();
@@ -56,12 +55,12 @@ class PostServiceTest {
 
     @Test
     void create_ACTIVE_상태가_아닌유저가_작성할경우_예외를던진다() {
-        PostCreateDto postCreateDto = PostCreateDto.builder()
+        PostCreate postCreate = PostCreate.builder()
                 .writerId(1L)
                 .content("두번째 포스트")
                 .build();
 
-        assertThatThrownBy(() -> postService.create(postCreateDto))
+        assertThatThrownBy(() -> postService.create(postCreate))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Users에서 ID 1를 찾을 수 없습니다.");
     }
@@ -69,7 +68,7 @@ class PostServiceTest {
     @Test
     void update() {
         long postId = 1L;
-        PostUpdateDto updateDto = PostUpdateDto.builder()
+        PostUpdate updateDto = PostUpdate.builder()
                 .content("내용수정")
                 .build();
 
@@ -80,7 +79,7 @@ class PostServiceTest {
     @Test
     void update할_포스트가_없으면_예외를_던진다() {
         long postId = 99L;
-        PostUpdateDto updateDto = PostUpdateDto.builder()
+        PostUpdate updateDto = PostUpdate.builder()
                 .content("내용수정")
                 .build();
 

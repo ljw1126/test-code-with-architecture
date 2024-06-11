@@ -1,12 +1,12 @@
 package com.example.demo.service;
 
-import com.example.demo.exception.CertificationCodeNotMatchedException;
-import com.example.demo.exception.ResourceNotFoundException;
-import com.example.demo.model.UserStatus;
-import com.example.demo.model.dto.UserCreateDto;
-import com.example.demo.model.dto.UserUpdateDto;
-import com.example.demo.repository.UserEntity;
-import org.junit.jupiter.api.DisplayName;
+import com.example.demo.common.domain.exception.CertificationCodeNotMatchedException;
+import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.user.domain.UserStatus;
+import com.example.demo.user.domain.UserCreate;
+import com.example.demo.user.domain.UserUpdate;
+import com.example.demo.user.infrastructure.UserEntity;
+import com.example.demo.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,6 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -68,7 +67,7 @@ class UserServiceTest {
 
     @Test
     void userCreateDto를_이용하여_유저생성_할수있다() {
-        UserCreateDto userCreateDto = UserCreateDto.builder()
+        UserCreate userCreate = UserCreate.builder()
                 .email("jeju1126@gmail.com")
                 .address("Jeju")
                 .nickname("jeju-jam")
@@ -76,7 +75,7 @@ class UserServiceTest {
 
         BDDMockito.doNothing().when(javaMailSender).send(new SimpleMailMessage());
 
-        UserEntity result = userService.create(userCreateDto);
+        UserEntity result = userService.create(userCreate);
 
         assertThat(result.getId()).isNotNull();
         assertThat(result.getStatus()).isEqualTo(UserStatus.PENDING);
@@ -84,12 +83,12 @@ class UserServiceTest {
 
     @Test
     void UserUpdateDto를_이용하여_유저수정_할수있다() {
-        UserUpdateDto userUpdateDto = UserUpdateDto.builder()
+        UserUpdate userUpdate = UserUpdate.builder()
                 .address("Seoul")
                 .nickname("updated-ljw1126")
                 .build();
 
-        UserEntity result = userService.update(2L, userUpdateDto); // findById에서 ACTIVE 상태인 경우만 조회
+        UserEntity result = userService.update(2L, userUpdate); // findById에서 ACTIVE 상태인 경우만 조회
 
         assertThat(result.getId()).isNotNull();
         assertThat(result.getAddress()).isEqualTo("Seoul");
