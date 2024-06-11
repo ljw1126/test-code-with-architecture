@@ -2,11 +2,10 @@ package com.example.demo.user.service;
 
 import com.example.demo.common.domain.exception.CertificationCodeNotMatchedException;
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
-import com.example.demo.user.domain.UserStatus;
+import com.example.demo.user.domain.User;
 import com.example.demo.user.domain.UserCreate;
+import com.example.demo.user.domain.UserStatus;
 import com.example.demo.user.domain.UserUpdate;
-import com.example.demo.user.infrastructure.UserEntity;
-import com.example.demo.user.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ class UserServiceTest {
     void getByEmail은_ACTIVE_상태인_유저를_찾아올수있다() {
         String email = "wkrdmsdmffn@naver.com";
 
-        UserEntity result = userService.getByEmail(email);
+        User result = userService.getByEmail(email);
 
         assertThat(result.getNickname()).isEqualTo("wkrdms");
     }
@@ -54,7 +53,7 @@ class UserServiceTest {
 
     @Test
     void getById는_ACTIVE_상태인_유저를_찾아올수있다() {
-        UserEntity result = userService.getById(2L);
+        User result = userService.getById(2L);
 
         assertThat(result.getNickname()).isEqualTo("wkrdms");
     }
@@ -75,7 +74,7 @@ class UserServiceTest {
 
         BDDMockito.doNothing().when(javaMailSender).send(new SimpleMailMessage());
 
-        UserEntity result = userService.create(userCreate);
+        User result = userService.create(userCreate);
 
         assertThat(result.getId()).isNotNull();
         assertThat(result.getStatus()).isEqualTo(UserStatus.PENDING);
@@ -88,7 +87,7 @@ class UserServiceTest {
                 .nickname("updated-ljw1126")
                 .build();
 
-        UserEntity result = userService.update(2L, userUpdate); // findById에서 ACTIVE 상태인 경우만 조회
+        User result = userService.update(2L, userUpdate); // findById에서 ACTIVE 상태인 경우만 조회
 
         assertThat(result.getId()).isNotNull();
         assertThat(result.getAddress()).isEqualTo("Seoul");
@@ -99,16 +98,16 @@ class UserServiceTest {
     void user를_로그인_시키면_마지막_로그인시간이_변경된다() {
         userService.login(2L);
 
-        UserEntity userEntity = userService.getById(2L);
-        assertThat(userEntity.getLastLoginAt()).isGreaterThan(0L); // TODO
+        User User = userService.getById(2L);
+        assertThat(User.getLastLoginAt()).isGreaterThan(0L); // TODO
     }
 
     @Test
     void PENDING_상태의_사용자는_인증코드로_ACTIVE_시킬수있다() {
         userService.verifyEmail(1L, "test-code");
 
-        UserEntity userEntity = userService.getById(1L);
-        assertThat(userEntity.getStatus()).isEqualTo(UserStatus.ACTIVE);
+        User User = userService.getById(1L);
+        assertThat(User.getStatus()).isEqualTo(UserStatus.ACTIVE);
     }
 
     @Test

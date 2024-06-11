@@ -1,5 +1,6 @@
 package com.example.demo.user.infrastructure;
 
+import com.example.demo.user.domain.User;
 import com.example.demo.user.domain.UserStatus;
 import com.example.demo.user.service.port.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,22 +15,23 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
 
     @Override
-    public UserEntity save(UserEntity userEntity) {
-        return userJpaRepository.save(userEntity);
+    public User save(User user) {
+        UserEntity saved = userJpaRepository.save(UserEntity.from(user)); // 도메인은 인프라 레이어 정보를 모르는게 좋다
+        return saved.toUser();
     }
 
     @Override
-    public Optional<UserEntity> findById(long id) {
-        return userJpaRepository.findById(id);
+    public Optional<User> findById(long id) {
+        return userJpaRepository.findById(id).map(UserEntity::toUser);
     }
 
     @Override
-    public Optional<UserEntity> findByIdAndStatus(long id, UserStatus userStatus) {
-        return userJpaRepository.findByIdAndStatus(id, userStatus);
+    public Optional<User> findByIdAndStatus(long id, UserStatus userStatus) {
+        return userJpaRepository.findByIdAndStatus(id, userStatus).map(UserEntity::toUser);
     }
 
     @Override
-    public Optional<UserEntity> findByEmailAndStatus(String email, UserStatus userStatus) {
-        return userJpaRepository.findByEmailAndStatus(email, userStatus);
+    public Optional<User> findByEmailAndStatus(String email, UserStatus userStatus) {
+        return userJpaRepository.findByEmailAndStatus(email, userStatus).map(UserEntity::toUser);
     }
 }

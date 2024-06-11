@@ -12,8 +12,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -31,7 +33,7 @@ class PostControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void getPostById로_포스트_한건_조회할수있다() throws Exception {
+    void getById로_포스트_한건_조회할수있다() throws Exception {
         mockMvc.perform(get("/api/posts/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("1"))
@@ -46,7 +48,7 @@ class PostControllerTest {
     }
 
     @Test
-    void updatePost로_포스트_한건_수정할수있다() throws Exception {
+    void update로_포스트_한건_수정할수있다() throws Exception {
         PostUpdate postUpdate = PostUpdate.builder()
                 .content("내용수정")
                 .build();

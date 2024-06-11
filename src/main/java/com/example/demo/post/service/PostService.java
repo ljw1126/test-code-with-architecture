@@ -1,17 +1,15 @@
 package com.example.demo.post.service;
 
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostCreate;
 import com.example.demo.post.domain.PostUpdate;
-import com.example.demo.post.infrastructure.PostEntity;
 import com.example.demo.post.service.port.PostRepository;
-import com.example.demo.user.infrastructure.UserEntity;
+import com.example.demo.user.domain.User;
 import com.example.demo.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Clock;
 
 @Service
 @RequiredArgsConstructor
@@ -21,25 +19,21 @@ public class PostService {
     private final UserService userService;
 
     @Transactional(readOnly = true)
-    public PostEntity findById(long id) {
+    public Post findById(long id) {
         return postRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Posts", id));
     }
 
     @Transactional
-    public PostEntity create(PostCreate postCreate) {
-        UserEntity userEntity = userService.getById(postCreate.getWriterId());
-        PostEntity postEntity = new PostEntity();
-        postEntity.setWriter(userEntity);
-        postEntity.setContent(postCreate.getContent());
-        postEntity.setCreatedAt(Clock.systemUTC().millis());
-        return postRepository.save(postEntity);
+    public Post create(PostCreate postCreate) {
+        User user = userService.getById(postCreate.getWriterId());
+        Post post = Post.of(postCreate, user);
+        return postRepository.save(post);
     }
 
     @Transactional
-    public PostEntity update(long id, PostUpdate postUpdate) {
-        PostEntity postEntity = findById(id);
-        postEntity.setContent(postUpdate.getContent());
-        postEntity.setModifiedAt(Clock.systemUTC().millis());
-        return postRepository.save(postEntity);
+    public Post update(long id, PostUpdate postUpdate) {
+        Post post = findById(id);
+        post = post.update(postUpdate);
+        return postRepository.save(post);
     }
 }

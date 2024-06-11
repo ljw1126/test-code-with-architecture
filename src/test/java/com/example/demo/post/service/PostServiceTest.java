@@ -1,10 +1,9 @@
 package com.example.demo.post.service;
 
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
+import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostCreate;
 import com.example.demo.post.domain.PostUpdate;
-import com.example.demo.post.service.PostService;
-import com.example.demo.post.infrastructure.PostEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,7 +11,8 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlGroup;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @TestPropertySource("classpath:test-application.properties")
@@ -27,10 +27,10 @@ class PostServiceTest {
 
     @Test
     void findById() {
-        PostEntity postEntity = postService.findById(1L);
+        Post post = postService.findById(1L);
 
-        assertThat(postEntity).isNotNull();
-        assertThat(postEntity.getContent()).isEqualTo("내용없음");
+        assertThat(post).isNotNull();
+        assertThat(post.getContent()).isEqualTo("내용없음");
     }
 
     @Test
@@ -47,7 +47,7 @@ class PostServiceTest {
                 .content("두번째 포스트")
                 .build();
 
-        PostEntity result = postService.create(postCreateDto);
+        Post result = postService.create(postCreateDto);
 
         assertThat(result).extracting("id", "content")
                 .containsExactly(2L, "두번째 포스트");
@@ -72,7 +72,7 @@ class PostServiceTest {
                 .content("내용수정")
                 .build();
 
-        PostEntity updated = postService.update(postId, updateDto);
+        Post updated = postService.update(postId, updateDto);
         assertThat(updated.getContent()).isEqualTo("내용수정");
     }
 
