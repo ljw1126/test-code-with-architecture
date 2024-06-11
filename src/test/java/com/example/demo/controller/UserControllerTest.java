@@ -67,6 +67,12 @@ class UserControllerTest {
     }
 
     @Test
+    void 사용자_인증코드가_틀린경우_403을_반환한다() throws Exception {
+        mockMvc.perform(get("/api/users/1/verify").queryParam("certificationCode", "invalid-code"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
     void 사용자는_내정보를_불러올때_개인정보인_주소도_갖고올수있다() throws Exception {
         mockMvc.perform(get("/api/users/me").header("EMAIL", "wkrdmsdmffn@naver.com"))
                 .andExpect(status().isOk())
