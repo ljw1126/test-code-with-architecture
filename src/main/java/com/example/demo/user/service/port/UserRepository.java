@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface UserRepository {
     User save(User user);
 
+    User getById(long writerId);
+
     Optional<User> findById(long id);
 
     Optional<User> findByIdAndStatus(long id, UserStatus userStatus);

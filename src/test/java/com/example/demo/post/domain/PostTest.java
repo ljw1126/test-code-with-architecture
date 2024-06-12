@@ -1,5 +1,6 @@
 package com.example.demo.post.domain;
 
+import com.example.demo.mock.TestClockHolder;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.domain.UserStatus;
 import org.junit.jupiter.api.Test;
@@ -23,9 +24,10 @@ class PostTest {
                 .certificationCode("certificate-code")
                 .build();
 
-        Post post = Post.of(postCreate, writer);
+        Post post = Post.of(postCreate, writer, new TestClockHolder(100L));
 
         assertThat(post.getContent()).isEqualTo("hello world");
         assertThat(post.getWriter().getEmail()).isEqualTo("tester@gmail.com");
+        assertThat(post.getCreatedAt()).isEqualTo(100L);
     }
 }

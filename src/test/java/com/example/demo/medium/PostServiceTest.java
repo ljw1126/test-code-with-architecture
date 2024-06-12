@@ -1,23 +1,10 @@
-package com.example.demo.post.service;
+package com.example.demo.medium;
 
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
-import com.example.demo.common.service.port.ClockHolder;
-import com.example.demo.common.service.port.UuidHolder;
-import com.example.demo.mock.FakeMailSender;
-import com.example.demo.mock.FakePostRepository;
-import com.example.demo.mock.FakeUserRepository;
-import com.example.demo.mock.TestClockHolder;
-import com.example.demo.mock.TestUuidHolder;
 import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostCreate;
 import com.example.demo.post.domain.PostUpdate;
-import com.example.demo.post.service.port.PostRepository;
-import com.example.demo.user.domain.User;
-import com.example.demo.user.domain.UserStatus;
-import com.example.demo.user.service.CertificationService;
-import com.example.demo.user.service.UserService;
-import com.example.demo.user.service.port.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.demo.post.service.PostService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,49 +15,16 @@ import org.springframework.test.context.jdbc.SqlGroup;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@SpringBootTest
+@TestPropertySource("classpath:test-application.properties")
+@SqlGroup({
+        @Sql(value = "/sql/user-repository-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
+        @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+})
 class PostServiceTest {
 
+    @Autowired
     private PostService postService;
-
-
-    @BeforeEach
-    void setUp() {
-        UserRepository fakeUserRepository = new FakeUserRepository();
-        PostRepository fakePostRepository = new FakePostRepository();
-        ClockHolder testClockHolder = new TestClockHolder(100L);
-        this.postService = PostService.builder()
-                .userRepository(fakeUserRepository)
-                .postRepository(fakePostRepository)
-                .clockHolder(testClockHolder)
-                .build();
-
-        User user1 = User.builder()
-                .email("leejinwoo1126@gmail.com")
-                .nickname("ljw1126")
-                .address("Busan")
-                .status(UserStatus.PENDING)
-                .certificationCode("test-code")
-                .build();
-
-        User user2 = User.builder()
-                .email("wkrdmsdmffn@naver.com")
-                .nickname("wkrdms")
-                .address("Busan")
-                .status(UserStatus.ACTIVE)
-                .certificationCode("test-code2")
-                .build();
-
-        fakeUserRepository.save(user1);
-        fakeUserRepository.save(user2);
-
-        Post post = Post.builder()
-                .writer(user2)
-                .content("내용없음")
-                .createdAt(1678530673958L)
-                .build();
-
-        fakePostRepository.save(post);
-    }
 
     @Test
     void findById() {
@@ -96,8 +50,8 @@ class PostServiceTest {
 
         Post result = postService.create(postCreateDto);
 
-        assertThat(result).extracting("id", "content", "createdAt")
-                .containsExactly(2L, "두번째 포스트", 100L);
+        assertThat(result).extracting("id", "content")
+                .containsExactly(2L, "두번째 포스트");
     }
 
     @Test
@@ -121,7 +75,6 @@ class PostServiceTest {
 
         Post updated = postService.update(postId, updateDto);
         assertThat(updated.getContent()).isEqualTo("내용수정");
-        assertThat(updated.getModifiedAt()).isEqualTo(100L);
     }
 
     @Test
