@@ -1,15 +1,17 @@
 package com.example.demo.user.service;
 
+import com.example.demo.user.controller.port.CertificateService;
 import com.example.demo.user.service.port.MailSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CertificationService {
+public class CertificationServiceImpl implements CertificateService {
 
     private final MailSender mailSender;
 
+    @Override
     public void send(String email, long userId, String certificationCode) {
         String title = "Please certify your email address";
         String content = "Please click the following link to certify your email address: " + generateCertificationUrl(userId, certificationCode);

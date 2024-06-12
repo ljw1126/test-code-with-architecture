@@ -2,35 +2,25 @@ package com.example.demo.post.service;
 
 import com.example.demo.common.domain.exception.ResourceNotFoundException;
 import com.example.demo.common.service.port.ClockHolder;
-import com.example.demo.common.service.port.UuidHolder;
-import com.example.demo.mock.FakeMailSender;
 import com.example.demo.mock.FakePostRepository;
 import com.example.demo.mock.FakeUserRepository;
 import com.example.demo.mock.TestClockHolder;
-import com.example.demo.mock.TestUuidHolder;
 import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostCreate;
 import com.example.demo.post.domain.PostUpdate;
 import com.example.demo.post.service.port.PostRepository;
 import com.example.demo.user.domain.User;
 import com.example.demo.user.domain.UserStatus;
-import com.example.demo.user.service.CertificationService;
-import com.example.demo.user.service.UserService;
 import com.example.demo.user.service.port.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlGroup;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class PostServiceTest {
+class PostServiceImplTest {
 
-    private PostService postService;
+    private PostServiceImpl postServiceImpl;
 
 
     @BeforeEach
@@ -38,7 +28,7 @@ class PostServiceTest {
         UserRepository fakeUserRepository = new FakeUserRepository();
         PostRepository fakePostRepository = new FakePostRepository();
         ClockHolder testClockHolder = new TestClockHolder(100L);
-        this.postService = PostService.builder()
+        this.postServiceImpl = PostServiceImpl.builder()
                 .userRepository(fakeUserRepository)
                 .postRepository(fakePostRepository)
                 .clockHolder(testClockHolder)
@@ -74,7 +64,7 @@ class PostServiceTest {
 
     @Test
     void findById() {
-        Post post = postService.findById(1L);
+        Post post = postServiceImpl.findById(1L);
 
         assertThat(post).isNotNull();
         assertThat(post.getContent()).isEqualTo("내용없음");
@@ -82,7 +72,7 @@ class PostServiceTest {
 
     @Test
     void findById_데이터가_없는경우_예외를던진다() {
-        assertThatThrownBy(() -> postService.findById(99L))
+        assertThatThrownBy(() -> postServiceImpl.findById(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Posts에서 ID 99를 찾을 수 없습니다.");
     }
@@ -94,7 +84,7 @@ class PostServiceTest {
                 .content("두번째 포스트")
                 .build();
 
-        Post result = postService.create(postCreateDto);
+        Post result = postServiceImpl.create(postCreateDto);
 
         assertThat(result).extracting("id", "content", "createdAt")
                 .containsExactly(2L, "두번째 포스트", 100L);
@@ -107,7 +97,7 @@ class PostServiceTest {
                 .content("두번째 포스트")
                 .build();
 
-        assertThatThrownBy(() -> postService.create(postCreate))
+        assertThatThrownBy(() -> postServiceImpl.create(postCreate))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Users에서 ID 1를 찾을 수 없습니다.");
     }
@@ -119,7 +109,7 @@ class PostServiceTest {
                 .content("내용수정")
                 .build();
 
-        Post updated = postService.update(postId, updateDto);
+        Post updated = postServiceImpl.update(postId, updateDto);
         assertThat(updated.getContent()).isEqualTo("내용수정");
         assertThat(updated.getModifiedAt()).isEqualTo(100L);
     }
@@ -131,7 +121,7 @@ class PostServiceTest {
                 .content("내용수정")
                 .build();
 
-        assertThatThrownBy(() -> postService.update(postId, updateDto))
+        assertThatThrownBy(() -> postServiceImpl.update(postId, updateDto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Posts에서 ID 99를 찾을 수 없습니다.");
     }

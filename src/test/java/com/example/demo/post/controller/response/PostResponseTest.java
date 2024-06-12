@@ -24,7 +24,11 @@ class PostResponseTest {
 
         PostResponse postResponse = PostResponse.from(post);
 
-        assertThat(post.getContent()).isEqualTo("hello world");
-        assertThat(post.getWriter().getEmail()).isEqualTo("tester@gmail.com");
+        assertThat(postResponse.getId()).isNull();
+        assertThat(postResponse.getContent()).isEqualTo("hello world");
+        assertThat(postResponse.getWriter().getId()).isNull();
+        assertThat(postResponse.getWriter().getNickname()).isEqualTo("tester");
+        assertThat(postResponse.getCreatedAt()).isNull();
+        assertThat(postResponse.getModifiedAt()).isNull();
     }
 }

@@ -4,7 +4,7 @@ import com.example.demo.common.domain.exception.ResourceNotFoundException;
 import com.example.demo.post.domain.Post;
 import com.example.demo.post.domain.PostCreate;
 import com.example.demo.post.domain.PostUpdate;
-import com.example.demo.post.service.PostService;
+import com.example.demo.post.service.PostServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,14 +21,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
         @Sql(value = "/sql/user-repository-test-data.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD),
         @Sql(value = "/sql/delete-all-data.sql", executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 })
-class PostServiceTest {
+class PostServiceImplTest {
 
     @Autowired
-    private PostService postService;
+    private PostServiceImpl postServiceImpl;
 
     @Test
     void findById() {
-        Post post = postService.findById(1L);
+        Post post = postServiceImpl.findById(1L);
 
         assertThat(post).isNotNull();
         assertThat(post.getContent()).isEqualTo("내용없음");
@@ -36,7 +36,7 @@ class PostServiceTest {
 
     @Test
     void findById_데이터가_없는경우_예외를던진다() {
-        assertThatThrownBy(() -> postService.findById(99L))
+        assertThatThrownBy(() -> postServiceImpl.findById(99L))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Posts에서 ID 99를 찾을 수 없습니다.");
     }
@@ -48,7 +48,7 @@ class PostServiceTest {
                 .content("두번째 포스트")
                 .build();
 
-        Post result = postService.create(postCreateDto);
+        Post result = postServiceImpl.create(postCreateDto);
 
         assertThat(result).extracting("id", "content")
                 .containsExactly(2L, "두번째 포스트");
@@ -61,7 +61,7 @@ class PostServiceTest {
                 .content("두번째 포스트")
                 .build();
 
-        assertThatThrownBy(() -> postService.create(postCreate))
+        assertThatThrownBy(() -> postServiceImpl.create(postCreate))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Users에서 ID 1를 찾을 수 없습니다.");
     }
@@ -73,7 +73,7 @@ class PostServiceTest {
                 .content("내용수정")
                 .build();
 
-        Post updated = postService.update(postId, updateDto);
+        Post updated = postServiceImpl.update(postId, updateDto);
         assertThat(updated.getContent()).isEqualTo("내용수정");
     }
 
@@ -84,7 +84,7 @@ class PostServiceTest {
                 .content("내용수정")
                 .build();
 
-        assertThatThrownBy(() -> postService.update(postId, updateDto))
+        assertThatThrownBy(() -> postServiceImpl.update(postId, updateDto))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessage("Posts에서 ID 99를 찾을 수 없습니다.");
     }
